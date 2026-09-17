@@ -1,0 +1,21 @@
+# Credentials — never commit these
+.env
+
+# Export output — can be gigabytes, keep off GitHub
+out/
+demo_out/
+*.zip
+*.pst
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Mac / Windows junk
+.DS_Store
+Thumbs.db
