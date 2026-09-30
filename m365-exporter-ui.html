@@ -328,15 +328,15 @@
                 <!-- Date Range -->
                 <div class="form-group">
                     <label>Date Range (Optional)</label>
-                    <div style="margin-bottom: 12px;">
-                        <label style="font-weight: 500; margin-bottom: 4px; display: block;">Days to look back</label>
-                        <input type="number" id="sinceDays" placeholder="90" min="1" max="365">
-                        <div class="help-text">Extract data from last N days (default: 90)</div>
-                    </div>
-                    <div>
-                        <label style="font-weight: 500; margin-bottom: 4px; display: block;">Modified after (YYYY-MM-DD)</label>
-                        <input type="date" id="modifiedAfter" placeholder="2024-01-01">
-                        <div class="help-text">Or specify exact date (overrides days setting)</div>
+                    <div class="date-range">
+                        <div>
+                            <label style="font-size: 12px; margin-bottom: 4px;">From</label>
+                            <input type="date" id="dateFrom" placeholder="2024-01-01">
+                        </div>
+                        <div>
+                            <label style="font-size: 12px; margin-bottom: 4px;">To</label>
+                            <input type="date" id="dateTo" placeholder="2024-03-31">
+                        </div>
                     </div>
                 </div>
 
@@ -407,8 +407,8 @@
             const clientId = document.getElementById('clientId').value;
             const clientSecret = document.getElementById('clientSecret').value;
             const adminEmail = document.getElementById('adminEmail').value;
-            const sinceDays = document.getElementById('sinceDays').value;
-            const modifiedAfter = document.getElementById('modifiedAfter').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
 
             // Validation
             if (!tenantId || !clientId || !clientSecret) {
@@ -426,11 +426,16 @@
                 return;
             }
 
+            if ((dateFrom && !dateTo) || (!dateFrom && dateTo)) {
+                showError('Please specify both start and end dates, or leave both empty');
+                return;
+            }
+
             // Start extraction
-            startExtraction(tenantId, clientId, clientSecret, adminEmail, emails, sinceDays, modifiedAfter);
+            startExtraction(tenantId, clientId, clientSecret, adminEmail, emails, dateFrom, dateTo);
         });
 
-        async function startExtraction(tenantId, clientId, clientSecret, adminEmail, employeeEmails, sinceDays, modifiedAfter) {
+        async function startExtraction(tenantId, clientId, clientSecret, adminEmail, employeeEmails, dateFrom, dateTo) {
             extractionInProgress = true;
             document.getElementById('formSection').classList.add('disabled');
             document.getElementById('progressSection').classList.add('show');
@@ -443,8 +448,7 @@
                 formData.append('client_secret', clientSecret);
                 formData.append('admin_email', adminEmail);
                 formData.append('employee_emails', JSON.stringify(employeeEmails));
-                if (sinceDays) formData.append('since_days', sinceDays);
-                if (modifiedAfter) formData.append('modified_after', modifiedAfter);
+                if (dateFrom) formData.append('modified_after', dateFrom);
 
                 // Start extraction
                 const response = await fetch('/api/extract', {

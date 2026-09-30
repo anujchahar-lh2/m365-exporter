@@ -45,7 +45,6 @@ def start_extraction():
         client_secret = request.form.get('client_secret', '').strip()
         admin_email = request.form.get('admin_email', '').strip()
         employee_emails = json.loads(request.form.get('employee_emails', '[]'))
-        since_days = request.form.get('since_days', '')
         modified_after = request.form.get('modified_after', '')
 
         # Validate inputs
@@ -72,7 +71,7 @@ def start_extraction():
         # Start extraction in background thread
         thread = threading.Thread(
             target=run_extraction,
-            args=(admin_email, employee_emails, since_days, modified_after, env_path)
+            args=(admin_email, employee_emails, modified_after, env_path)
         )
         thread.daemon = True
         thread.start()
@@ -85,7 +84,7 @@ def start_extraction():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-def run_extraction(admin_email, employee_emails, since_days, modified_after, env_path):
+def run_extraction(admin_email, employee_emails, modified_after, env_path):
     """Run extraction command in background"""
     try:
         extraction_status['active'] = True
@@ -106,8 +105,6 @@ def run_extraction(admin_email, employee_emails, since_days, modified_after, env
             cmd.extend(['--only', email])
 
         # Add date range if provided
-        if since_days:
-            cmd.extend(['--since-days', since_days])
         if modified_after:
             cmd.extend(['--modified-after', modified_after])
 
