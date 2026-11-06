@@ -127,6 +127,18 @@ python3 run_m365_export.py \
 
 ---
 
+## Local web UI
+
+Prefer a form over command-line flags?
+
+```bash
+python3 server.py
+```
+
+Opens `http://127.0.0.1:8365` (this machine only): choose demo or real mode, enter the employee email(s) and date range, watch live progress, and browse/download results. Uses only the standard library.
+
+---
+
 ## Output structure
 
 ```
